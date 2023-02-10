@@ -1,6 +1,6 @@
 clear all
 // use "C:\Users\natan\Downloads\cps04.dta"
-use "/Users/natan/applied_econ_regressions/cps04.dta"
+// use "/Users/natan/applied_econ_regressions/cps04.dta"
 
 gen lnahe = ln(ahe)
 gen lnage = ln(age)
