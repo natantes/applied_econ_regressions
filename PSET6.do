@@ -1,26 +1,33 @@
+
+
+// QUESTION 1
 clear all
 // use "C:\Users\natan\Downloads\cps04.dta"
 use "/Users/natan/applied_econ_regressions/cps04.dta"
 
+
+// (1A)
 gen lnahe = ln(ahe)
 gen lnage = ln(age)
 gen age2 = age * age
 
-reg ahe age female bachelor, r
+eststo OLS1: reg ahe age female bachelor, r
 rvpplot age
 ovtest
 
-reg lnahe age female bachelor, r
+eststo OLS2: reg lnahe age female bachelor, r
 rvpplot age
 ovtest
 
-reg lnahe lnage female bachelor, r
+eststo OLS3: reg lnahe lnage female bachelor, r
 rvpplot lnage
 ovtest
 
-reg lnahe age age2 female bachelor, r
+eststo OLS4: reg lnahe age age2 female bachelor, r
 rvpplot age
 ovtest
+
+esttab OLS1 OLS2 OLS3 OLS4, onecell mtitles("m1" "m2" "m3" "m4") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
 
 
 // (1B)
@@ -30,20 +37,18 @@ display _b[age]
 
 reg lnahe age female bachelor, r
 // For Model 2 the amount would be the following:
-display exp(_b[age] * 26 + _b[female] + _b[bachelor]) - exp(_b[age] * 25 + _b[female] + _b[bachelor])
-display exp(_b[age] * 34 + _b[female] + _b[bachelor]) - exp(_b[age] * 33 + _b[female] + _b[bachelor])
-display exp(_b[age] * 26) - exp(_b[age] * 25)
-display exp(_b[age] * 34) - exp(_b[age] * 33)
+display exp(_b[age] * 26 + _b[female] + _b[bachelor] + _b[_cons]) - exp(_b[age] * 25 + _b[female] + _b[bachelor] + _b[_cons])
+display exp(_b[age] * 34 + _b[female] + _b[bachelor] + _b[_cons]) - exp(_b[age] * 33 + _b[female] + _b[bachelor] + _b[_cons])
 
 reg lnahe lnage female bachelor, r
 // For Model 3, the amount that would change would be the following:
-display exp(_b[lnage] * ln(26) + _b[female] + _b[bachelor]) - exp(_b[lnage] * ln(25) + _b[female] + _b[bachelor])
-display exp(_b[lnage] * ln(34) + _b[female] + _b[bachelor]) - exp(_b[lnage] * ln(33) + _b[female] + _b[bachelor])
+display exp(_b[lnage] * ln(26) + _b[female] + _b[bachelor] + _b[_cons]) - exp(_b[lnage] * ln(25) + _b[female] + _b[bachelor] + _b[_cons])
+display exp(_b[lnage] * ln(34) + _b[female] + _b[bachelor] + _b[_cons]) - exp(_b[lnage] * ln(33) + _b[female] + _b[bachelor] + _b[_cons])
 
 reg lnahe age age2 female bachelor, r
 // For Model 4, the amount that would change would be the following:
-display exp(_b[age] * 26 + _b[age2] * 26 * 26 + _b[female] + _b[bachelor]) - exp(_b[age] * 25 + _b[age2] * 25 * 25 + _b[female] + _b[bachelor])
-display exp(_b[age] * 34 + _b[age2] * 34 * 34 + _b[female] + _b[bachelor]) - exp(_b[age] * 33 + _b[age2] * 33 * 33 + _b[female] + _b[bachelor])
+display exp(_b[age] * 26 + _b[age2] * 26 * 26 + _b[female] + _b[bachelor] + _b[_cons]) - exp(_b[age] * 25 + _b[age2] * 25 * 25 + _b[female] + _b[bachelor] + _b[_cons])
+display exp(_b[age] * 34 + _b[age2] * 34 * 34 + _b[female] + _b[bachelor] + _b[_cons]) - exp(_b[age] * 33 + _b[age2] * 33 * 33 + _b[female] + _b[bachelor] + _b[_cons])
 
 // (1C)
 // Generally, according to the resiudal plots, and shape of the data, the 
@@ -53,19 +58,23 @@ display exp(_b[age] * 34 + _b[age2] * 34 * 34 + _b[female] + _b[bachelor]) - exp
 // (1D)
 // Yes, since the dummy coefficent on female is not small and significant,
 // it would suggest that there exists a difference between the reference group
-// which is males and the dummy group which is females.
+// which is males and the dummy group which is females. Since the coefficent is
+// negative, females generally make fixed percentage less based on semi log model
 
 
 // (1E)
 gen femalexage = female * age
 
-reg lnahe age age2 female bachelor femalexage, r
+eststo OLS1: reg lnahe age age2 female bachelor femalexage, r
 rvpplot age
 ovtest
 
-reg lnahe age age2 female bachelor femalexage lnage, r
+eststo OLS2: reg lnahe age age2 female bachelor femalexage lnage, r
 rvpplot age
 ovtest
+
+esttab OLS1 OLS2, onecell mtitles("m1" "m2") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
+
 
 // (1F)
 // Yes but this model gives a more nuanced version of the difference. The model
@@ -76,7 +85,7 @@ ovtest
 
 // (1G)
 // The predicted earnings males and females differ by 0.0098328% where females
-// make that much less per year.
+// make 0.0098328% less per year.
 
 // (1H)
 gen bachelorxfemale = female * bachelor
@@ -87,14 +96,19 @@ test bachelorxfemalexage bachelorxfemale
 // results suggest that there does exist a significant difference between 
 // females with bachelor degrees and males with bachelor degreees.
 
+// QUESTION 2
 // use "/Users/natan/applied_econ_regressions/TeachingRatings.dta", clear
 
-reg course_eval age minority female onecredit beauty intro nnenglish, r
-reg course_eval minority female onecredit beauty nnenglish, r
+eststo OLS1: reg course_eval age minority female onecredit beauty intro nnenglish, r
+
+eststo OLS2: reg course_eval minority female onecredit beauty nnenglish, r
+
 rvpplot beauty
 ovtest
 
-// (2)
+esttab OLS1 OLS2, onecell mtitles("m1" "m2") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
+
+
 // Since the amount of observations are much larger than the amount of potential
 // regressors, I first ran a regression including all variables. From this first
 // model, it seems as though age and intro classes are not releveant explantory 
