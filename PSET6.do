@@ -3,8 +3,7 @@
 // QUESTION 1
 clear all
 // use "C:\Users\natan\Downloads\cps04.dta"
-use "/Users/natan/applied_econ_regressions/cps04.dta"
-
+use "C:\Dev\applied_econ_regressions\datasets\cps04.dta", clear
 
 // (1A)
 gen lnahe = ln(ahe)
@@ -56,7 +55,7 @@ display exp(_b[age] * 34 + _b[age2] * 34 * 34 + _b[female] + _b[bachelor] + _b[_
 // compared to the other models. 
 
 // (1D)
-// Yes, since the dummy coefficent on female is not small and significant,
+// Yes, since the dummy coefficent on female is not small and is significant,
 // it would suggest that there exists a difference between the reference group
 // which is males and the dummy group which is females. Since the coefficent is
 // negative, females generally make fixed percentage less based on semi log model
