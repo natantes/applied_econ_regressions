@@ -2,8 +2,8 @@
 
 // QUESTION 1
 clear all
-// use "C:\Users\natan\Downloads\cps04.dta"
-use "C:\Dev\applied_econ_regressions\datasets\cps04.dta", clear
+// use "C:\Users\natan\Downloads\cps04.dta", clear
+use "/Users/natan/Dev/applied_econ_regressions/datasets/cps04.dta", clear
 
 // (1A)
 gen lnahe = ln(ahe)
@@ -72,8 +72,14 @@ eststo OLS2: reg lnahe age age2 female bachelor femalexage lnage, r
 rvpplot age
 ovtest
 
-esttab OLS1 OLS2, onecell mtitles("m1" "m2") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
-
+esttab OLS1 OLS2 OLS4, onecell mtitles("m1" "m2" "m3") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
+// The preference between the two models in part (E) is the model that exludes
+// the lnage variable, the inclusion of the regressors seems to create the 
+// problem that both variables capture the diminishing return nature of the
+// of the data generating process so the minimizing problem of OLS cannot
+// differntiate between the explantory power of over the other. Compared to the 
+// best model for model C which was the quadratic model, this model includes a
+// relevant interaction term which helps better explain the relationship.
 
 // (1F)
 // Yes but this model gives a more nuanced version of the difference. The model
