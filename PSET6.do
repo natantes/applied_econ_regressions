@@ -3,7 +3,8 @@
 // QUESTION 1
 clear all
 // use "C:\Users\natan\Downloads\cps04.dta", clear
-use "/Users/natan/Dev/applied_econ_regressions/datasets/cps04.dta", clear
+// use "/Users/natan/Dev/applied_econ_regressions/datasets/cps04.dta", clear
+use "C:\Dev\applied_econ_regressions\datasets\cps04.dta"
 
 // (1A)
 gen lnahe = ln(ahe)
@@ -73,7 +74,7 @@ rvpplot age
 ovtest
 
 esttab OLS1 OLS2 OLS4, onecell mtitles("m1" "m2" "m3") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
-// The preference between the two models in part (E) is the model that exludes
+// The preference between the two models in part (E) is the model that excludes
 // the lnage variable, the inclusion of the regressors seems to create the 
 // problem that both variables capture the diminishing return nature of the
 // of the data generating process so the minimizing problem of OLS cannot
@@ -88,7 +89,9 @@ esttab OLS1 OLS2 OLS4, onecell mtitles("m1" "m2" "m3") cells(b(star fmt(3)) se(p
 // a difference between females with males as they become older due to the 
 // sigificant coefficent on the femalexage term.
 
+eststo OLS1: reg lnahe age age2 female bachelor femalexage, r
 // (1G)
+display exp(_b[age] * 30 + _b[age2] * 30 * 30 + _b[bachelor] + _b[_cons]) - exp(_b[age] * 30 + _b[age2] * 30 * 30 + _b[female] + _b[bachelor] + _b[femalexage] * 30 + _b[_cons])
 // The predicted earnings males and females differ by 0.0098328% where females
 // make 0.0098328% less per year.
 
@@ -105,6 +108,8 @@ test bachelorxfemalexage bachelorxfemale
 // use "/Users/natan/applied_econ_regressions/TeachingRatings.dta", clear
 
 eststo OLS1: reg course_eval age minority female onecredit beauty intro nnenglish, r
+
+test intro age
 
 eststo OLS2: reg course_eval minority female onecredit beauty nnenglish, r
 
@@ -125,7 +130,10 @@ esttab OLS1 OLS2, onecell mtitles("m1" "m2") cells(b(star fmt(3)) se(par fmt(2))
 // this, the model would suggest that higher physical appearance is a predictor
 // of higher course evaluations. If one were to give advice simply based on this
 // model, if the school's objective is just to increase course evaluations, then
-// it would be advisable to hire those with higher physical appearance.
+// it would be advisable to hire those with higher physical appearance. Issues
+// endogenity don't seem likely to arise since reverse causual effects of course
+// evaluation on regressors like age minority or class charachterisitcs do not
+// seem plausible
 
 
 

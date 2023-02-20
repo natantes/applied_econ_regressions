@@ -30,7 +30,7 @@ display "When both candidates spend 1000: " _b[expendA] * 1 + _b[expendB] * 1
 
 // Q3
 clear all
-use "C:\Users\natan\Downloads\Baseball.dta"
+use "C:\Dev\applied_econ_regressions\datasets\Baseball.dta"
 
 reg salary years gamesyr bavg hrunsyr rbisyr sbasesyr, r
 eststo OLS1
@@ -41,5 +41,7 @@ eststo OLS2
 reg salary bavg, r
 eststo OLS3
 
-esttab OLS1 OLS2 OLS3, mtitles("m1" "m2" "m3") cells(b(star fmt(3)) se(par fmt(2)) t) legend label varlabels(_cons Constant) stats(r2)
+esttab  OLS1 OLS2 OLS3, mtitles("m1" "m2" "m3") ///
+	using "C:\Dev\applied_econ_regressions\datasets\table1.tex", ///
+	cells(b(star fmt(3)) se(par fmt(2)) t) legend label varlabels(_cons Constant) stats(r2) 
 
