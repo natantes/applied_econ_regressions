@@ -4,10 +4,11 @@
 use "C:\Dev\applied_econ_regressions\datasets\Names.dta", clear
 
 gen white = (black == 0)
+gen male = (female == 0)
 
-// (1A)
 eststo OLS1: reg call_back black, r
 esttab OLS1, onecell mtitles("m1") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
+// (1A)
 // the call_back rate for white people was 9.65% and the call back rate for
 // african americans was 6.80%. The 95% confidence interval for the difference
 // is simply the interval of the dummy which is [-0.0384, -0.00799]. Since 0
@@ -15,31 +16,47 @@ esttab OLS1, onecell mtitles("m1") cells(b(star fmt(3)) se(par fmt(2))) legend l
 // it is significantly different from 0 at the 95% confidence level. A 3.2% 
 // decrease is very large difference in the real world sense given all else equal.
 
-// (1B)
 gen blackxfemale = black * female
 gen whitexfemale = white * female
-eststo OLS2: quietly reg call_back whitexfemale blackxfemale, r
-esttab OLS2, onecell mtitles("m2") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
-lincom _b[whitexfemale] - _b[blackxfemale]
-// the call backrate for white females is 9.88% and the callback rate for 
-// black females was 6.62%, the difference 0.03264 and it is significantly
-// different from 0
-
-
-// (1C)
+gen whitexhigh = high * (black != 1)
 gen highxwhite = high * (black != 1)
 gen highxblack = high * black
-eststo OLS3: quietly reg call_back highxwhite highxblack, r
-esttab OLS3, onecell mtitles("m3") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
-lincom _b[highxwhite] - _b[highxblack]
-// Yes, the difference between high quality white resume call backs and high
-// quality black resume callbacks has a coefficent that is realitevly large in 
-// the real world sense, approx. 4.08% and the p value suggests significance
-// at the 95% and 99% confidence levels
+gen whitexmale = white * male
+// eststo OLS2: quietly reg call_back whitexfemale blackxfemale, r
+// esttab OLS2, onecell mtitles("m2") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
+// lincom _b[whitexfemale] - _b[blackxfemale]
+eststo OLS3: reg call_back white##male, r
+eststo OLS4: reg call_back white##high, r
+eststo OLS3: reg call_back white male whitexmale, r
+eststo OLS4: reg call_back white high whitexhigh, r
+esttab OLS3 OLS4, onecell mtitles("m3" "m4") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
+// (1B)
+// the call back rate differntial between African American/White is not 
+// significantly different for men than for women. Running a difference in 
+// differences regression, the coefficent on whitexmale suggests that the
+// differntial is not significant different from 0 at 95% and 90% significance
+// levels. The differntial for between African American/White is not 
+// significantly different for high quality/ low quality resumes at the 95%
+// and 90% significane levels as well by testing the null hypothesis in m4 
+// that the coefficent on whitexhigh is significantly differnent from 0. This
+// suggests that the disciminatory effects occur homogenously across male/female 
+// and low/high quality reusmes
 
+
+
+eststo OLS5: reg call_back black highxblack highxwhite, r
+lincom (_b[highxwhite]) - (_b[highxblack])
+esttab OLS5, onecell mtitles("m5") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
+// (1C)
+// the high low quality difference from whites is 0.023 and for african americans
+// is 0.0051, testing the difference using lincom, we get the same result from
+// "1B" using difference in differences. The high/low quality differential is
+// is not signifiacntly different for white vs african american resumes and this
+// result is not significant at the 95% and 90% significance levels. 
+
+eststo OLS5: quietly reg black high honors volunteer computerskills email workinschool yearsexp, r
+esttab OLS5, onecell mtitles("m5") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
 // (1D)
-eststo OLS1: quietly reg black high honors volunteer computerskills email workinschool yearsexp, r
-esttab OLS1, onecell mtitles("m1") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
 // Based on the regressions, there is no significant covariance between most
 // of the aspects of the resumes because all of the coefficents of the
 // are insignificant at the 90% of the significance level. However, the
