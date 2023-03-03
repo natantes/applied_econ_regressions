@@ -3,8 +3,8 @@
 // QUESTION 1
 clear all
 // use "C:\Users\natan\Downloads\cps04.dta", clear
-// use "/Users/natan/Dev/applied_econ_regressions/datasets/cps04.dta", clear
-use "C:\Dev\applied_econ_regressions\datasets\cps04.dta"
+use "/Users/natan/Dev/applied_econ_regressions/datasets/cps04.dta", clear
+// use "C:\Dev\applied_econ_regressions\datasets\cps04.dta"
 
 // (1A)
 gen lnahe = ln(ahe)
@@ -12,22 +12,29 @@ gen lnage = ln(age)
 gen age2 = age * age
 
 eststo OLS1: reg ahe age female bachelor, r
-rvpplot age
+// rvpplot age
 ovtest
 
 eststo OLS2: reg lnahe age female bachelor, r
-rvpplot age
+// rvpplot age
 ovtest
 
 eststo OLS3: reg lnahe lnage female bachelor, r
-rvpplot lnage
+// rvpplot lnage
 ovtest
 
 eststo OLS4: reg lnahe age age2 female bachelor, r
-rvpplot age
+// rvpplot age
 ovtest
 
-esttab OLS1 OLS2 OLS3 OLS4, onecell mtitles("m1" "m2" "m3" "m4") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
+// esttab OLS1 OLS2 using "/Users/natan/Dev/applied_econ_regressions/datasets/table1.tex", onecell mtitles("m2" "m3" "m4") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2) alignment(D{.}{.}{-1}) width(1\linewidth) se ar2 title("abc") replace
+
+esttab OLS1 OLS2 using table1_tex, ///
+booktabs fragment replace ///
+se(%3.2f) b(3) label  indicate(Controls=age) ///
+star(* 0.1 ** 0.05 *** 0.01) nonotes nomtitles drop(_cons) ///
+mgroups("mpg" "weight", pattern(1 0 1 0) ///
+prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span})) 
 
 
 // (1B)
@@ -73,7 +80,7 @@ eststo OLS2: reg lnahe age age2 female bachelor femalexage lnage, r
 rvpplot age
 ovtest
 
-esttab OLS1 OLS2 OLS4, onecell mtitles("m1" "m2" "m3") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2)
+esttab using "C:\Dev\applied_econ_regressions\datasets\table1.tex"  OLS1 OLS2 OLS4, onecell mtitles("m1" "m2" "m3") cells(b(star fmt(3)) se(par fmt(2))) legend label varlabels(_cons Constant) stats(r2) replace 
 // The preference between the two models in part (E) is the model that excludes
 // the lnage variable, the inclusion of the regressors seems to create the 
 // problem that both variables capture the diminishing return nature of the
